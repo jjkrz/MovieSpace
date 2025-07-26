@@ -1,12 +1,44 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Domain.Common;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database
 {
     public class ApplicationDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
+        private readonly IPublisher publisher;
 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher) : base(options)
+        {
+            this.publisher = publisher;
+        }
+
+        public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            int result = await base.SaveChangesAsync(cancellationToken);
+
+            await PublishDomainEvents();
+
+            return result;
+        }
+
+        private async Task PublishDomainEvents() 
+        {
+             var domainEvents = ChangeTracker
+                .Entries<Entity>()
+                .Select(entry => entry.Entity)
+                .SelectMany(entity =>
+                {
+                    List<IDomainEvent> domainEvents = entity.PopDomainEvents();
+
+                    return domainEvents;
+                })
+                .ToList();
+
+            foreach (IDomainEvent domainEvent in domainEvents)
+            {
+                await publisher.Publish(domainEvent);
+            } 
         }
 
     }
