@@ -6,4 +6,15 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="MoviePersonality\Events\" />
+    <Folder Include="Movies\Events\" />
+    <Folder Include="Users\Events\" />
+  </ItemGroup>
+
 </Project>

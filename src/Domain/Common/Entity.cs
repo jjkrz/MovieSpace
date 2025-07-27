@@ -6,6 +6,10 @@
 
         protected readonly List<IDomainEvent> _domainEvents = [];
 
+        protected Entity()
+        {
+        }
+
         protected Entity(Guid Id)
         {
             this.Id = Id;
