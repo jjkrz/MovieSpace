@@ -2,7 +2,7 @@
 using Domain.MoviePersonality;
 using Domain.Movies;
 
-namespace Domain.Actors
+namespace Domain.MoviePeople
 {
     public sealed class MoviePerson : Entity
     {
