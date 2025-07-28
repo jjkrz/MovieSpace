@@ -14,7 +14,7 @@ namespace Domain.Users
             Email = email;
         }
 
-        private readonly List<Rating> _ratings = [];
+        private readonly List<Rating> Ratings = [];
 
         public List<IDomainEvent> PopDomainEvents()
         {
