@@ -1,4 +1,5 @@
-﻿using Domain.Common;
+﻿using System.Reflection;
+using Domain.Common;
 using FluentValidation;
 using MediatR;
 
@@ -39,12 +40,21 @@ namespace Application.Behaviors
                 if (typeof(TResponse).IsGenericType && typeof(TResponse).GetGenericTypeDefinition() == typeof(Result<>))
                 {
                     var innerType = typeof(TResponse).GetGenericArguments()[0];
-                    var genericFailure = typeof(Result<>)
-                        .MakeGenericType(innerType)
-                        .GetMethod("Failure", new[] { typeof(Error) });
 
-                    var result = genericFailure!.Invoke(null, new object[] { error });
+                    var method = typeof(Result)
+                        .GetMethods(BindingFlags.Public | BindingFlags.Static)
+                        .FirstOrDefault(m =>
+                            m.Name == "Failure" &&
+                            m.IsGenericMethod &&
+                            m.GetParameters().Length == 1 &&
+                            m.GetParameters()[0].ParameterType == typeof(Error));
+
+                    var genericFailure = method!.MakeGenericMethod(innerType);
+
+                    var result = genericFailure.Invoke(null, new object[] { error });
+
                     return (TResponse)result!;
+
                 }
 
                 if (typeof(TResponse) == typeof(Result))
