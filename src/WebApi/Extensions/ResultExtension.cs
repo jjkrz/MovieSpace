@@ -1,67 +1,36 @@
 ﻿using Domain.Common;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace WebApi.Extensions
 {
     public static class ResultExtensions
     {
-        public static TOut Match<TOut>(
-            this Result result,
-            Func<TOut> onSuccess,
-            Func<Result, TOut> onFailure)
+        public static IActionResult Match(this Result result, Func<IActionResult> onSuccess, Func<Result, IActionResult> onFailure)
         {
             return result.IsSuccess ? onSuccess() : onFailure(result);
         }
 
-        public static TOut Match<TIn, TOut>(
-            this Result<TIn> result,
-            Func<TIn, TOut> onSuccess,
-            Func<Result<TIn>, TOut> onFailure)
+        public static IActionResult Match<T>(this Result<T> result, Func<T, IActionResult> onSuccess, Func<Result, IActionResult> onFailure)
         {
             return result.IsSuccess ? onSuccess(result.Value) : onFailure(result);
         }
 
-        public static IActionResult ToProblem<T>(this Result<T> result, ControllerBase controller)
+        public static IActionResult CustomResult(Result result)
         {
-            var error = result.Error!;
-            var problem = new ProblemDetails
+            if (result.IsFailure || result.Error == null)
+                throw new InvalidOperationException();
+
+            var error = result.Error;
+
+            return error.Type switch
             {
-                Detail = error.Message,
-                Status = GetStatusCode(error.Type),
-                Title = error.Type.ToString()
-            };
-
-            return controller.StatusCode(problem.Status.Value, problem);
-        }
-
-        public static IActionResult ToProblem(this Result result, ControllerBase controller)
-        {
-            var error = result.Error!;
-            var problem = new ProblemDetails
-            {
-                Detail = error.Message,
-                Status = GetStatusCode(error.Type),
-                Title = error.Type.ToString()
-            };
-
-            return controller.StatusCode(problem.Status.Value, problem);
-        }
-
-        private static int GetStatusCode(ErrorType type)
-        {
-            return type switch
-            {
-                ErrorType.Validation => 400,
-                ErrorType.BadRequest => 400,
-                ErrorType.NotFound => 404,
-                ErrorType.Conflict => 409,
-                ErrorType.Unauthorized => 401,
-                ErrorType.Forbidden => 403,
-                ErrorType.Dependency => 424,       
-                ErrorType.Timeout => 408,          
-                ErrorType.Unavailable => 503,      
-                ErrorType.Unexpected => 500,       
-                _ => 500
+                ErrorType.NotFound => new NotFoundObjectResult(new { error = error.Message }),
+                ErrorType.Validation => new BadRequestObjectResult(new { error = error.Message }),
+                ErrorType.Conflict => new ConflictObjectResult(new { error = error.Message }),
+                ErrorType.Unauthorized => new UnauthorizedObjectResult(new { error = error.Message }),
+                ErrorType.Forbidden => new ForbidResult(),
+                _ => new ObjectResult(new { error = error.Message }) { StatusCode = 500 }
             };
         }
     }

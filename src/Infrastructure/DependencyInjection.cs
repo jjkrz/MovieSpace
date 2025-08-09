@@ -1,5 +1,8 @@
-﻿using Domain.Users;
+﻿using Application.Abstractions;
 using Infrastructure.Database;
+using Infrastructure.Persistance.Identity;
+using Infrastructure.Persistance.Services.AuthService;
+using Infrastructure.Persistance.Services.Jwt;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -17,13 +20,16 @@ namespace Infrastructure
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(connectionString));
 
-            services.AddIdentity<User, IdentityRole<Guid>>(options =>
+            services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
             {
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 8;
             })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddTransient<JwtTokenGenerator>();
 
             return services;
         }
