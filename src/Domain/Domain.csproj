@@ -14,6 +14,7 @@
   <ItemGroup>
     <Folder Include="MoviePersonality\Events\" />
     <Folder Include="Movies\Events\" />
+    <Folder Include="Users\Errors\" />
     <Folder Include="Users\Events\" />
   </ItemGroup>
 

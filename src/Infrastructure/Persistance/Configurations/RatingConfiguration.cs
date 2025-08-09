@@ -1,4 +1,5 @@
 ﻿using Domain.Movies;
+using Infrastructure.Persistance.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -18,8 +19,9 @@ namespace Infrastructure.Persistance.Configurations
             builder.HasOne(r => r.Movie)
                 .WithMany("Ratings");
 
-            builder.HasOne(r => r.User)
-                .WithMany("Ratings");
+            builder.HasOne<ApplicationUser>()
+                .WithMany("Ratings")
+                .HasForeignKey(r => r.UserId);
         }
     }
 }
