@@ -1,68 +1,25 @@
 ﻿using Domain.Common;
 using Microsoft.AspNetCore.Mvc;
 
+
 namespace WebApi.Extensions
 {
     public static class ResultExtensions
     {
-        public static TOut Match<TOut>(
-            this Result result,
-            Func<TOut> onSuccess,
-            Func<Result, TOut> onFailure)
+        public static IActionResult Match(this Result result, Func<IActionResult> onSuccess)
         {
-            return result.IsSuccess ? onSuccess() : onFailure(result);
+            if (result.IsSuccess) return onSuccess();
+
+            var problem = result.Error.ToProblemDetails();
+            return new ObjectResult(problem) { StatusCode = problem.Status };
         }
 
-        public static TOut Match<TIn, TOut>(
-            this Result<TIn> result,
-            Func<TIn, TOut> onSuccess,
-            Func<Result<TIn>, TOut> onFailure)
+        public static IActionResult Match<T>(this Result<T> result, Func<T, IActionResult> onSuccess)
         {
-            return result.IsSuccess ? onSuccess(result.Value) : onFailure(result);
-        }
+            if (result.IsSuccess) return onSuccess(result.Value);
 
-        public static IActionResult ToProblem<T>(this Result<T> result, ControllerBase controller)
-        {
-            var error = result.Error!;
-            var problem = new ProblemDetails
-            {
-                Detail = error.Message,
-                Status = GetStatusCode(error.Type),
-                Title = error.Type.ToString()
-            };
-
-            return controller.StatusCode(problem.Status.Value, problem);
-        }
-
-        public static IActionResult ToProblem(this Result result, ControllerBase controller)
-        {
-            var error = result.Error!;
-            var problem = new ProblemDetails
-            {
-                Detail = error.Message,
-                Status = GetStatusCode(error.Type),
-                Title = error.Type.ToString()
-            };
-
-            return controller.StatusCode(problem.Status.Value, problem);
-        }
-
-        private static int GetStatusCode(ErrorType type)
-        {
-            return type switch
-            {
-                ErrorType.Validation => 400,
-                ErrorType.BadRequest => 400,
-                ErrorType.NotFound => 404,
-                ErrorType.Conflict => 409,
-                ErrorType.Unauthorized => 401,
-                ErrorType.Forbidden => 403,
-                ErrorType.Dependency => 424,       
-                ErrorType.Timeout => 408,          
-                ErrorType.Unavailable => 503,      
-                ErrorType.Unexpected => 500,       
-                _ => 500
-            };
+            var problem = result.Error.ToProblemDetails();
+            return new ObjectResult(problem) { StatusCode = problem.Status };
         }
     }
 }

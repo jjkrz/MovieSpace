@@ -1,6 +1,4 @@
-﻿using Domain.Users;
-
-namespace Domain.Movies
+﻿namespace Domain.Movies
 {
     public sealed class Rating
     {
@@ -17,6 +15,5 @@ namespace Domain.Movies
         public int Score { get; private set; }
 
         public Movie Movie { get; private set; } = null!;
-        public User User { get; private set; } = null!;
     }
 }
