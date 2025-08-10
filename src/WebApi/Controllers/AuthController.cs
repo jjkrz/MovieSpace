@@ -24,9 +24,7 @@ namespace WebApi.Controllers
         {
             var result = await mediator.Send(new RegisterUserCommand(request.UserName, request.Email, request.Password));
 
-            return result.IsSuccess ?
-                Ok(result.Value) :
-                new ObjectResult(result.Error.ToProblemDetails());
+            return result.Match(onSuccess: Ok);
         }
 
         [HttpPost]
@@ -34,10 +32,8 @@ namespace WebApi.Controllers
         public async Task<IActionResult> Login([FromBody] LoginUserRequest request)
         {
             var result = await mediator.Send(new LoginUserCommand(request.Email, request.Password));
-            
-            return result.IsSuccess ?
-                Ok(result.Value) :
-                BadRequest(result.Error);
+
+            return result.Match(onSuccess: Ok);
         }
     }
 }

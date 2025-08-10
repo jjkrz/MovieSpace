@@ -6,32 +6,20 @@ namespace WebApi.Extensions
 {
     public static class ResultExtensions
     {
-        public static IActionResult Match(this Result result, Func<IActionResult> onSuccess, Func<Result, IActionResult> onFailure)
+        public static IActionResult Match(this Result result, Func<IActionResult> onSuccess)
         {
-            return result.IsSuccess ? onSuccess() : onFailure(result);
+            if (result.IsSuccess) return onSuccess();
+
+            var problem = result.Error.ToProblemDetails();
+            return new ObjectResult(problem) { StatusCode = problem.Status };
         }
 
-        public static IActionResult Match<T>(this Result<T> result, Func<T, IActionResult> onSuccess, Func<Result, IActionResult> onFailure)
+        public static IActionResult Match<T>(this Result<T> result, Func<T, IActionResult> onSuccess)
         {
-            return result.IsSuccess ? onSuccess(result.Value) : onFailure(result);
-        }
+            if (result.IsSuccess) return onSuccess(result.Value);
 
-        public static IActionResult CustomResult(Result result)
-        {
-            if (result.IsFailure || result.Error == null)
-                throw new InvalidOperationException();
-
-            var error = result.Error;
-
-            return error.Type switch
-            {
-                ErrorType.NotFound => new NotFoundObjectResult(new { error = error.Message }),
-                ErrorType.Validation => new BadRequestObjectResult(new { error = error.Message }),
-                ErrorType.Conflict => new ConflictObjectResult(new { error = error.Message }),
-                ErrorType.Unauthorized => new UnauthorizedObjectResult(new { error = error.Message }),
-                ErrorType.Forbidden => new ForbidResult(),
-                _ => new ObjectResult(new { error = error.Message }) { StatusCode = 500 }
-            };
+            var problem = result.Error.ToProblemDetails();
+            return new ObjectResult(problem) { StatusCode = problem.Status };
         }
     }
 }
