@@ -2,6 +2,7 @@
 using Application.Users.Register;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Extensions;
 using WebApi.Requests;
 
 namespace WebApi.Controllers
@@ -25,7 +26,7 @@ namespace WebApi.Controllers
 
             return result.IsSuccess ?
                 Ok(result.Value) :
-                BadRequest(result.Error);
+                new ObjectResult(result.Error.ToProblemDetails());
         }
 
         [HttpPost]
