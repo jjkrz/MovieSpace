@@ -1,6 +1,8 @@
 ﻿using Application.Abstractions;
 using Application.Users.Login;
+using Application.Users.Login.Events;
 using Application.Users.Register;
+using Application.Users.Register.Events;
 using Domain.Common;
 using Infrastructure.Persistance.Identity;
 using Infrastructure.Persistance.Services.Jwt;
@@ -12,11 +14,13 @@ namespace Infrastructure.Persistance.Services.AuthService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
+        private readonly IApplicationEventDispatcher _eventDispatcher;
 
-        public AuthService(UserManager<ApplicationUser> userManager, JwtTokenGenerator jwtTokenGenerator)
+        public AuthService(UserManager<ApplicationUser> userManager, JwtTokenGenerator jwtTokenGenerator, IApplicationEventDispatcher eventDispatcher)
         {
             _userManager = userManager;
             _jwtTokenGenerator = jwtTokenGenerator;
+            _eventDispatcher = eventDispatcher;
         }
 
         public async Task<Result<RegisterResponse>> RegisterAsync(string userName, string email, string password)
@@ -30,6 +34,8 @@ namespace Infrastructure.Persistance.Services.AuthService
                 var errorMessages = result.Errors.Select(e => e.Description).ToList();
                 return Result.Failure<RegisterResponse>(AuthErrors.RegistrationFailed(string.Join(", ", errorMessages)));
             }
+
+            await _eventDispatcher.PublishApplicationEvent(new UserRegistered());
 
             return new RegisterResponse
             {
@@ -54,7 +60,12 @@ namespace Infrastructure.Persistance.Services.AuthService
 
 
             if (token.IsFailure)
+            {
+                await _eventDispatcher.PublishApplicationEvent(new UserLoginFailed());
                 return Result.Failure<LoginResponse>(token.Error);
+            }
+
+            await _eventDispatcher.PublishApplicationEvent(new UserLoginSuccessful());
 
             return Result.Success(new LoginResponse
             {

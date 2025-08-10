@@ -25,6 +25,7 @@ namespace Infrastructure.Database
             return result;
         }
 
+
         private async Task PublishDomainEvents() 
         {
              var domainEvents = ChangeTracker

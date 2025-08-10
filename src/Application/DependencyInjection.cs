@@ -1,4 +1,5 @@
-﻿using Application.Behaviors;
+﻿using Application.Abstractions;
+using Application.Behaviors;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,8 @@ namespace Application
             services.AddValidatorsFromAssembly(assembly);
 
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+            services.AddTransient<IApplicationEventDispatcher, ApplicationEventDispatcher>();
 
             return services;
         }
