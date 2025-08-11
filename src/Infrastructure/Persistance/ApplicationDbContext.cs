@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Infrastructure.Persistance.Abstractions;
 using Infrastructure.Persistance.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
     {
         private readonly IPublisher publisher;
 
@@ -20,30 +21,9 @@ namespace Infrastructure.Database
         {
             int result = await base.SaveChangesAsync(cancellationToken);
 
-            await PublishDomainEvents();
-
             return result;
         }
 
-
-        private async Task PublishDomainEvents() 
-        {
-             var domainEvents = ChangeTracker
-                .Entries<Entity>()
-                .Select(entry => entry.Entity)
-                .SelectMany(entity =>
-                {
-                    List<IDomainEvent> domainEvents = entity.PopDomainEvents();
-
-                    return domainEvents;
-                })
-                .ToList();
-
-            foreach (IDomainEvent domainEvent in domainEvents)
-            {
-                await publisher.Publish(domainEvent);
-            } 
-        }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
