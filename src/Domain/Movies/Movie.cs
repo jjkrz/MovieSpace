@@ -5,14 +5,21 @@ namespace Domain.Movies
 {
     public sealed class Movie : Entity
     {
-        public Movie(Guid Id) : base(Id)
-        {
-        }
+        
+        private readonly List<Genre> _genres = [];
+        public IReadOnlyCollection<Genre> Genres => _genres.AsReadOnly();
 
-        private readonly List<Genre> Genres = [];
-        private readonly List<MoviePersonRole> MoviePeople = [];
-        private readonly List<ProductionCountry> ProductionCountries = [];
-        private readonly List<Rating> Ratings = [];
+
+        private readonly List<MoviePersonRole> _moviePeople = [];
+        public IReadOnlyCollection<MoviePersonRole> MoviePeople => _moviePeople.AsReadOnly();
+
+
+        private readonly List<ProductionCountry> _productionCountries = [];
+        public IReadOnlyCollection<ProductionCountry> ProductionCountries => _productionCountries.AsReadOnly();
+
+        private readonly List<Rating> _ratings = [];
+        public IReadOnlyCollection<Rating> Ratings => _ratings.AsReadOnly();
+
         public string Title { get; private set; } = null!;
         public string Description { get; private set; } = null!;
         public Uri? PosterUri { get; private set; }
@@ -23,5 +30,50 @@ namespace Domain.Movies
         public TimeOnly Duration { get; private set; }
         public DateTime ReleaseDate { get; private set; }
 
+        public static Result<Movie> CreateMovie(string title, string description, Uri? posterUri, TimeOnly duration, DateTime releaseDate)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                return Result.Failure<Movie>(Error.NullValue);
+
+            if (string.IsNullOrWhiteSpace(description))
+                return Result.Failure<Movie>(Error.NullValue);
+
+            var movie = new Movie
+            {
+                Title = title,
+                Description = description,
+                Duration = duration,
+                PosterUri = posterUri,
+                ReleaseDate = releaseDate
+            };
+
+            return Result.Success(movie);
+        }
+
+        public Result Rate(Guid userId, int score)
+        {
+            var existingRating = _ratings.FirstOrDefault(r => r.UserId == userId && r.MovieId == Id);
+
+            if (existingRating != null)
+            {
+                var updateResult = existingRating.UpdateScore(score);
+                if (updateResult.IsFailure)
+                    return Result.Failure(updateResult.Error);
+
+                return Result.Success();
+            }
+
+            var newRating = Rating.Create(Id, userId, score);
+            if (newRating.IsFailure)
+                return Result.Failure<Rating>(newRating.Error);
+
+            _ratings.Add(newRating.Value);
+            return Result.Success(newRating.Value);
+        }
+
+        public double GetAverageRating()
+        {
+            return _ratings.Any() ? _ratings.Average(r => r.Score) : 0;
+        }
     }
 }

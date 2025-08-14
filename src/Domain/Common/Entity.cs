@@ -4,16 +4,11 @@
     {
         public Guid Id { get; set; }
 
-        protected readonly List<IDomainEvent> _domainEvents = [];
-
         protected Entity()
         {
         }
 
-        protected Entity(Guid Id)
-        {
-            this.Id = Id;
-        }
+        protected readonly List<IDomainEvent> _domainEvents = [];
 
         public List<IDomainEvent> PopDomainEvents()
         {
