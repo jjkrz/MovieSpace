@@ -17,7 +17,7 @@ namespace Infrastructure.Persistance.Configurations
                 .IsRequired();
 
             builder.HasOne(r => r.Movie)
-                .WithMany("Ratings");
+                .WithMany(m => m.Ratings);
 
             builder.HasOne<ApplicationUser>()
                 .WithMany("Ratings")
