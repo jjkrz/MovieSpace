@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <Folder Include="Errors\" />
-    <Folder Include="Movies\" />
     <Folder Include="MoviePersonality\" />
   </ItemGroup>
 

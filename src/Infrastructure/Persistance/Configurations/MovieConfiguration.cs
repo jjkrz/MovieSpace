@@ -1,6 +1,4 @@
-﻿using Domain.MoviePeople;
-using Domain.MoviePersonality;
-using Domain.Movies;
+﻿using Domain.Movies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -26,7 +24,7 @@ namespace Infrastructure.Persistance.Configurations
                 .HasConversion(
                     uri => uri == null ? null : uri.ToString(),
                     str => string.IsNullOrEmpty(str) ? null : new Uri(str, UriKind.Absolute))
-                .HasMaxLength(500);
+                .HasMaxLength(2000);
 
             builder.Property(m => m.Duration)
                 .HasConversion(
@@ -37,11 +35,11 @@ namespace Infrastructure.Persistance.Configurations
             builder.Property(m => m.ReleaseDate)
                 .IsRequired();
 
-            builder.HasMany<Genre>("Genres")
+            builder.HasMany<Genre>(m => m.Genres)
                 .WithMany("Movies")
                 .UsingEntity(j => j.ToTable("MovieGenre"));
 
-            builder.HasMany<ProductionCountry>("ProductionCountries")
+            builder.HasMany<ProductionCountry>(m => m.ProductionCountries)
                 .WithMany("Movies")
                 .UsingEntity(j => j.ToTable("MovieCountries"));
         }

@@ -1,5 +1,5 @@
 ﻿using Domain.Common;
-using Infrastructure.Persistance.Abstractions;
+using Domain.Movies;
 using Infrastructure.Persistance.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Database
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IApplicationDbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
-        private readonly IPublisher publisher;
 
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IPublisher publisher) : base(options)
+        public DbSet<Movie> Movies { get; private set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-            this.publisher = publisher;
         }
 
         public async override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -23,7 +23,6 @@ namespace Infrastructure.Database
 
             return result;
         }
-
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

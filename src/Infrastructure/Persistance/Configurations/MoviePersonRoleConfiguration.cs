@@ -13,7 +13,7 @@ namespace Infrastructure.Persistance.Configurations
             builder.HasKey(x => new { x.MovieId, x.MoviePersonId, x.MovieRoleId });
 
             builder.HasOne(x => x.Movie)
-               .WithMany("MoviePeople")
+               .WithMany(x => x.MoviePeople)
                .HasForeignKey(x => x.MovieId);
 
             builder.HasOne(x => x.MoviePerson)

@@ -4,6 +4,7 @@ using System.Text;
 using Domain.Common;
 using Infrastructure.Persistance.Identity;
 using Infrastructure.Persistance.Services.AuthService;
+using Infrastructure.Persistance.Services.Jwt.Errors;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -56,7 +57,7 @@ namespace Infrastructure.Persistance.Services.Jwt
             }
             catch (Exception ex)
             {
-                return Result.Failure<JwtToken>(AuthErrors.TokenGenerationFailed(ex.Message));
+                return Result.Failure<JwtToken>(JwtErrors.TokenGenerationFailed(ex.Message));
             }
 
         }
