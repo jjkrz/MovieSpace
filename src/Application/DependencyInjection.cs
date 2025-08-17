@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions;
 using Application.Behaviors;
+using Application.Profiles;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,8 @@ namespace Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             services.AddTransient<IApplicationEventDispatcher, ApplicationEventDispatcher>();
+
+            services.AddAutoMapper(typeof(MovieProfile));
 
             return services;
         }

@@ -5,6 +5,8 @@ using Application.Movies.AddMovie;
 using WebApi.Extensions;
 using Application.Movies.RateMovie;
 using Microsoft.AspNetCore.Authorization;
+using Application.Movies.GetMovies;
+using Domain.Common;
 
 namespace WebApi.Controllers
 {
@@ -16,7 +18,7 @@ namespace WebApi.Controllers
 
         public MovieController(IMediator mediator)
         {
-            _mediator = mediator;            
+            _mediator = mediator;
         }
 
         [HttpPost]
@@ -29,9 +31,17 @@ namespace WebApi.Controllers
 
         [Authorize]
         [HttpPost("{movieId}/rate")]
-        public async Task<IActionResult> RateMovie([FromRoute]Guid movieId, [FromBody] RateMovieRequest reqeust)
+        public async Task<IActionResult> RateMovie([FromRoute] Guid movieId, [FromBody] RateMovieRequest reqeust)
         {
             var result = await _mediator.Send(new RateMovieCommand(movieId, reqeust.Score));
+
+            return result.Match(onSuccess: Ok);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetMovies([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            var result = await _mediator.Send(new GetMoviesQuery(page, pageSize));
 
             return result.Match(onSuccess: Ok);
         }

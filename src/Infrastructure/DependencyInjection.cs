@@ -59,6 +59,7 @@ namespace Infrastructure
             services.AddScoped<IUnitOfWork, EfUnitOfWork>();
             services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<IUserContext, UserContext>();
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             return services;
         }
