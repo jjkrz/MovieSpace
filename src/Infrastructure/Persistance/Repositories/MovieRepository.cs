@@ -55,5 +55,12 @@ namespace Infrastructure.Persistance.Repositories
 
             return await query.LongCountAsync(cancellationToken);
         }
+
+        public async Task<Movie?> GetByIdWithGenres(Guid Id, CancellationToken cancellationToken)
+        {
+            return await _context.Movies
+                .Include(m => m.Genres)
+                .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
+        }
     }
 }

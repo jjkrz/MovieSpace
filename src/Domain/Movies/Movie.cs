@@ -1,5 +1,6 @@
 ﻿using Domain.Common;
 using Domain.MoviePersonality;
+using Domain.Movies.Errors;
 
 namespace Domain.Movies
 {
@@ -74,6 +75,16 @@ namespace Domain.Movies
         public double GetAverageRating()
         {
             return _ratings.Any() ? _ratings.Average(r => r.Score) : 0;
+        }
+
+        public Result AddGenre(Genre genre)
+        {
+            if (genre == null)
+                return Result.Failure(Error.NullValue);
+            if (_genres.Any(g => g.Id == genre.Id))
+                return Result.Failure(MovieErrors.DuplicateGenre(genre.Name));
+            _genres.Add(genre);
+            return Result.Success();
         }
     }
 }

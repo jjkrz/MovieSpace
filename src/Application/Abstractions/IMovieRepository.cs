@@ -14,5 +14,9 @@ namespace Application.Abstractions
                     CancellationToken cancellationToken = default);
         Task CreateAsync(Movie movie, CancellationToken cancellationToken);
         Task<Movie?> GetByIdWithRatingAsync(Guid Id, CancellationToken cancellationToken);
+
+        Task<Movie?> GetByIdWithGenres(
+                    Guid Id,
+                    CancellationToken cancellationToken);
     }
 }
