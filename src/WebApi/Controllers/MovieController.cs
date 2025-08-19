@@ -6,7 +6,7 @@ using WebApi.Extensions;
 using Application.Movies.RateMovie;
 using Microsoft.AspNetCore.Authorization;
 using Application.Movies.GetMovies;
-using Domain.Common;
+using Application.Movies.AddGenreToMovie;
 
 namespace WebApi.Controllers
 {
@@ -43,6 +43,13 @@ namespace WebApi.Controllers
         {
             var result = await _mediator.Send(new GetMoviesQuery(page, pageSize));
 
+            return result.Match(onSuccess: Ok);
+        }
+
+        [HttpPost("{movieId}/genres/{genreId}")]
+        public async Task<IActionResult> AddGenreToMovie([FromRoute] Guid movieId, [FromRoute] Guid genreId)
+        {
+            var result = await _mediator.Send(new AddGenreToMovieCommand(movieId, genreId));
             return result.Match(onSuccess: Ok);
         }
     }
