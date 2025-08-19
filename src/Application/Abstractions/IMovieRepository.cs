@@ -18,7 +18,7 @@ namespace Application.Abstractions
 
         Task<Movie?> GetByIdWithGenres(
                     Guid Id,
-                    CancellationToken cancellationToken)
+                    CancellationToken cancellationToken);
 
         Task<List<MovieRatingData>> GetAllMoviesRatingDataAsync(
                     int skip, 

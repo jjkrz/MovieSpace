@@ -31,7 +31,7 @@ namespace Application.Movies.GetMovies
 
                 return result;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Result.Failure<PaginatedResponse<MovieBriefDto>>(MovieApplicationErrors.FailedToGetMovies);
             }

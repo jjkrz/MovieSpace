@@ -1,16 +1,15 @@
 ﻿using Application.Abstractions;
 using Domain.Common;
-using Domain.Movies;
 
 namespace Application.Movies.AddGenreToMovie
 {
     public class AddGenreToMovieCommandHandler : ICommandHandler<AddGenreToMovieCommand>
     {
         private readonly IMovieRepository _movieRepo;
-        private readonly IRepository<Genre> _genreRepo;
+        private readonly IGenreRepository _genreRepo;
         private readonly IUnitOfWork _unitOfWork;
 
-        public AddGenreToMovieCommandHandler(IMovieRepository movieRepo, IRepository<Genre> genreRepo, IUnitOfWork unitOfWork)
+        public AddGenreToMovieCommandHandler(IMovieRepository movieRepo, IGenreRepository genreRepo, IUnitOfWork unitOfWork)
         {
             _movieRepo = movieRepo;
             _genreRepo = genreRepo;
@@ -19,7 +18,7 @@ namespace Application.Movies.AddGenreToMovie
 
         public async Task<Result> Handle(AddGenreToMovieCommand request, CancellationToken cancellationToken)
         {
-            var genre = await _genreRepo.GetByIdAsync(request.genreId, cancellationToken: cancellationToken);
+            var genre = await _genreRepo.GetByIdAsync(request.genreId, cancellationToken);
 
             if (genre is null)
             {
