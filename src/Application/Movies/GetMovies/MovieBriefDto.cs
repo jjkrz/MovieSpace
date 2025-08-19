@@ -5,6 +5,6 @@
         public string Title { get; set; } = null!;
         public string Genres { get; set; } = null!;
         public DateOnly ReleaseDate { get; set; }
-        public int AverageRating { get; set; }
+        public double AverageRating { get; set; }
     }
 }
