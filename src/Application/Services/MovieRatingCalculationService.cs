@@ -13,14 +13,23 @@ namespace Application.Services
         private readonly TimeSpan _interval;
         private DateTime _lastRun = DateTime.MinValue;
 
-
         public MovieRatingCalculationService(
             IServiceProvider serviceProvider,
-            ILogger<MovieRatingCalculationService> logger, 
+            ILogger<MovieRatingCalculationService> logger,
             IConfiguration configuration)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
+
+            var intervalString = configuration["MovieRating:UpdateIntervalHours"];
+            var intervalHours = 1;
+
+            if (!string.IsNullOrEmpty(intervalString) && int.TryParse(intervalString, out var parsed) && parsed > 0)
+            {
+                intervalHours = parsed;
+            }
+
+            _interval = TimeSpan.FromHours(intervalHours);
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
