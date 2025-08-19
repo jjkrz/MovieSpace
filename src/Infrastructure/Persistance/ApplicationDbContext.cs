@@ -12,6 +12,7 @@ namespace Infrastructure.Database
     {
         public DbSet<Movie> Movies { get; private set; }
         public DbSet<Genre> Genres { get; private set; }
+        public DbSet<ProductionCountry> ProductionCountries { get; private set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
