@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions;
 using Application.Behaviors;
 using Application.Profiles;
+using Application.Services;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +24,8 @@ namespace Application
             services.AddTransient<IApplicationEventDispatcher, ApplicationEventDispatcher>();
 
             services.AddAutoMapper(typeof(MovieProfile));
+
+            services.AddHostedService<MovieRatingCalculationService>();
 
             return services;
         }

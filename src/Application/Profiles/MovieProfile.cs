@@ -13,7 +13,7 @@ namespace Application.Profiles
                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                .ForMember(dest => dest.Genres, opt => opt.MapFrom(src => string.Join(", ", src.Genres.Select(g => g.Name))))
                .ForMember(dest => dest.ReleaseDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.ReleaseDate)))
-               .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.GetAverageRating()));
+               .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.AverageRating));
         }
     }
 }

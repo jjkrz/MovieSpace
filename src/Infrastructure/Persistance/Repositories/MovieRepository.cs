@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions;
+using Application.Services;
 using Domain.Movies;
 using Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
@@ -61,6 +62,43 @@ namespace Infrastructure.Persistance.Repositories
             return await _context.Movies
                 .Include(m => m.Genres)
                 .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
+        }
+        
+        public async Task<List<MovieRatingData>> GetAllMoviesRatingDataAsync(int skip, int take, CancellationToken cancellationToken = default)
+        {
+            return await _context.Movies
+                .OrderBy(m => m.Id)
+                .Skip(skip)
+                .Take(take)
+                .Select(m => new MovieRatingData(
+                    m.Id,
+                    m.Ratings.Any() ? m.Ratings.Average(r => r.Score) : null,
+                    m.Ratings.Count))
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task UpdateMovieRatingsAsync(List<MovieRatingUpdate> updates, CancellationToken cancellationToken = default)
+        {
+            foreach (var update in updates)
+            {
+                await _context.Movies
+                    .Where(m => m.Id == update.MovieId)
+                    .ExecuteUpdateAsync(setters => setters
+                        .SetProperty(m => m.AverageRating, update.AverageRating)
+                        .SetProperty(m => m.RatingCount, update.RatingCount),
+                    cancellationToken);
+            }
+        }
+
+        public async Task<List<MovieRatingData>> GetMoviesWithNewRatingsAsync(DateTime since, CancellationToken cancellationToken = default)
+        {
+            return await _context.Movies
+                .Where(m => m.Ratings.Any(r => r.CreatedAt >= since || r.UpdatedAt >= since))
+                .Select(m => new MovieRatingData(
+                    m.Id,
+                    m.Ratings.Any() ? m.Ratings.Average(r => r.Score) : null,
+                    m.Ratings.Count))
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -9,17 +9,21 @@ namespace Domain.Movies
         {
         }
 
-        private Rating(Guid movieId, Guid userId, int score)
+        private Rating(Guid movieId, Guid userId, int score, DateTime createdAt)
         {
             MovieId = movieId;
             UserId = userId;
             Score = score;
+            CreatedAt = createdAt;
         }
 
         public Guid MovieId { get; private set; }
         public Guid UserId { get; private set; }
 
         public int Score { get; private set; }
+
+        public DateTime CreatedAt { get; private set; }
+        public DateTime UpdatedAt { get; private set; }
 
         public Movie Movie { get; private set; } = null!;
 
@@ -31,7 +35,7 @@ namespace Domain.Movies
             if (movieId == Guid.Empty || userId == Guid.Empty)
                 return Result.Failure<Rating>(Error.NullValue);
 
-            return Result.Success(new Rating(movieId, userId, score));
+            return Result.Success(new Rating(movieId, userId, score, DateTime.UtcNow));
         }
 
         public Result UpdateScore(int newScore)
@@ -40,6 +44,7 @@ namespace Domain.Movies
                 return Result.Failure(MovieErrors.RatingScoreOutOfRange(newScore));
 
             Score = newScore;
+            UpdatedAt = DateTime.UtcNow;
             return Result.Success();
         }
     }

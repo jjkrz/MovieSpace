@@ -1,4 +1,5 @@
-﻿using Domain.Movies;
+﻿using Application.Services;
+using Domain.Movies;
 
 namespace Application.Abstractions
 {
@@ -17,6 +18,17 @@ namespace Application.Abstractions
 
         Task<Movie?> GetByIdWithGenres(
                     Guid Id,
+                    CancellationToken cancellationToken)
+
+        Task<List<MovieRatingData>> GetAllMoviesRatingDataAsync(
+                    int skip, 
+                    int take, 
+                    CancellationToken cancellationToken);
+        Task UpdateMovieRatingsAsync(
+                    List<MovieRatingUpdate> updates, 
+                    CancellationToken cancellationToken);
+        Task<List<MovieRatingData>> GetMoviesWithNewRatingsAsync(
+                    DateTime since, 
                     CancellationToken cancellationToken);
     }
 }

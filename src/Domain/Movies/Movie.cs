@@ -30,6 +30,8 @@ namespace Domain.Movies
         }
         public TimeOnly Duration { get; private set; }
         public DateTime ReleaseDate { get; private set; }
+        public double? AverageRating { get; private set; }
+        public int RatingCount { get; private set; }
 
         public static Result<Movie> CreateMovie(string title, string description, Uri? posterUri, TimeOnly duration, DateTime releaseDate)
         {
@@ -72,9 +74,10 @@ namespace Domain.Movies
             return Result.Success(newRating.Value);
         }
 
-        public double GetAverageRating()
+        public void UpdateAverageRating(double? averageRating, int ratingCount)
         {
-            return _ratings.Any() ? _ratings.Average(r => r.Score) : 0;
+            AverageRating = averageRating;
+            RatingCount = ratingCount;
         }
 
         public Result AddGenre(Genre genre)
