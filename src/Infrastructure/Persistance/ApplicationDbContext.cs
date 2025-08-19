@@ -10,8 +10,8 @@ namespace Infrastructure.Database
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
-
         public DbSet<Movie> Movies { get; private set; }
+        public DbSet<Genre> Genres { get; private set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

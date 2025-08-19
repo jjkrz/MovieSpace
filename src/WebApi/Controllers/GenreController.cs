@@ -1,4 +1,5 @@
 ﻿using Application.Genres.AddGenre;
+using Application.Genres.DeleteGenre;
 using Application.Genres.GetGenres;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -31,6 +32,14 @@ namespace WebApi.Controllers
         {
             var result = await _mediator.Send(new GetGenresQuery(page, pageSize));
 
+            return result.Match(onSuccess: Ok);
+        }
+
+        [HttpDelete("{genreId}")]
+        public async Task<IActionResult> DeleteGenre([FromRoute] Guid genreId)
+        {
+            var result = await _mediator.Send(new DeleteGenreCommand(genreId));
+            
             return result.Match(onSuccess: Ok);
         }
 
