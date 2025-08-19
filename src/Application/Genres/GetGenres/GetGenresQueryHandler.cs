@@ -2,15 +2,14 @@
 using Application.Helpers;
 using AutoMapper;
 using Domain.Common;
-using Domain.Movies;
 
 namespace Application.Genres.GetGenres
 {
     public class GetGenresQueryHandler : IQueryHandler<GetGenresQuery, PaginatedResponse<GenreDto>>
     {
-        private readonly IRepository<Genre> _genreRepo;
+        private readonly IGenreRepository _genreRepo;
         private readonly IMapper _mapper;
-        public GetGenresQueryHandler(IRepository<Genre> genreRepo, IMapper mapper)
+        public GetGenresQueryHandler(IGenreRepository genreRepo, IMapper mapper)
         {
             _genreRepo = genreRepo;
             _mapper = mapper;
@@ -20,15 +19,13 @@ namespace Application.Genres.GetGenres
         {
             try
             {
-                var genres = await _genreRepo.GetAllAsync(cancellationToken: cancellationToken);
+                var filteredGenres = await _genreRepo.GetPaginatedAsync(request.Page, request.PageSize, cancellationToken: cancellationToken);
                 
-                var filteredGenres = genres
-                    .Skip(request.Page * request.PageSize)
-                    .Take(request.PageSize);
-
                 var genresDto = _mapper.Map<List<GenreDto>>(filteredGenres);
 
-                var pageInfo = new PageInfo(request.Page, request.PageSize, genres.Count);
+                var genresCount = await _genreRepo.GetCountAsync(cancellationToken: cancellationToken);
+
+                var pageInfo = new PageInfo(request.Page, request.PageSize, genresCount);
 
                 return Result.Success(new PaginatedResponse<GenreDto>(genresDto, pageInfo));
             }

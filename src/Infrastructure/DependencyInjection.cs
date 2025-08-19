@@ -56,10 +56,12 @@ namespace Infrastructure
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddTransient<JwtTokenGenerator>();
-            services.AddScoped<IUnitOfWork, EfUnitOfWork>();
-            services.AddScoped<IMovieRepository, MovieRepository>();
             services.AddScoped<IUserContext, UserContext>();
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            services.AddScoped<IUnitOfWork, EfUnitOfWork>();
+            
+            services.AddScoped<IMovieRepository, MovieRepository>();
+            services.AddScoped<IGenreRepository, GenreRepository>();
 
             return services;
         }
