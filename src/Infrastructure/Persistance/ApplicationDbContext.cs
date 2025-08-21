@@ -1,5 +1,7 @@
 ﻿using Domain.Common;
 using Domain.Movies;
+using Domain.MoviePeople;
+using Domain.MoviePersonality;
 using Infrastructure.Persistance.Identity;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -13,6 +15,9 @@ namespace Infrastructure.Database
         public DbSet<Movie> Movies { get; private set; }
         public DbSet<Genre> Genres { get; private set; }
         public DbSet<ProductionCountry> ProductionCountries { get; private set; }
+        public DbSet<MoviePerson> MoviePeople { get; private set; }
+        public DbSet<MovieRole> MovieRoles { get; private set; }
+        public DbSet<MoviePersonRole> MoviePersonRoles { get; private set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
