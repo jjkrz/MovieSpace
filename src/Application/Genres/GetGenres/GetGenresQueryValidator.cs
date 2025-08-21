@@ -6,7 +6,7 @@ namespace Application.Genres.GetGenres
     {
         public GetGenresQueryValidator()
         {
-            RuleFor(x => x.Page).InclusiveBetween(0, int.MaxValue)
+            RuleFor(x => x.Page).InclusiveBetween(1, int.MaxValue)
                 .WithMessage("Page must be a non-negative integer.");
 
             RuleFor(x => x.PageSize).InclusiveBetween(1, 100)
