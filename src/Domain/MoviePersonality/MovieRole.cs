@@ -5,6 +5,5 @@ namespace Domain.MoviePersonality
     public sealed class MovieRole: Entity
     { 
         public string RoleName { get; private set; } = null!;
-        public string? CharacterName { get; private set; }
     }
 }
