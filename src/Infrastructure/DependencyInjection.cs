@@ -64,6 +64,7 @@ namespace Infrastructure
             services.AddScoped<IGenreRepository, GenreRepository>();
             services.AddScoped<IProductionCountryRepository, ProductionCountryRepository>();
             services.AddScoped<IMoviePersonRepository, MoviePersonRepository>();
+            services.AddScoped<IMovieRoleRepository, MovieRoleRepository>();
 
             return services;
         }
