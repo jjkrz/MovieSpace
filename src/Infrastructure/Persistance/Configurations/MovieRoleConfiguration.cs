@@ -15,9 +15,6 @@ namespace Infrastructure.Persistance.Configurations
             builder.Property(x => x.RoleName)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            builder.Property(x => x.CharacterName)
-                .HasMaxLength(100);
         }
     }
 }
