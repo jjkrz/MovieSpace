@@ -23,6 +23,9 @@ namespace Infrastructure.Persistance.Configurations
             builder.HasOne(x => x.MovieRole)
                 .WithMany()
                 .HasForeignKey(x => x.MovieRoleId);
+
+            builder.Property(x => x.CharacterName)
+                .HasMaxLength(100);
         }
     }
 }
