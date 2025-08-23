@@ -20,6 +20,10 @@ namespace Application.Abstractions
                     Guid Id,
                     CancellationToken cancellationToken);
 
+        Task<Movie?> GetByIdWithCast(
+                    Guid Id,
+                    CancellationToken cancellationToken);
+
         Task<List<MovieRatingData>> GetAllMoviesRatingDataAsync(
                     int skip, 
                     int take, 
