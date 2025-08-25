@@ -7,6 +7,7 @@ using Application.Movies.RateMovie;
 using Microsoft.AspNetCore.Authorization;
 using Application.Movies.GetMovies;
 using Application.Movies.AddGenreToMovie;
+using Application.Movies.AddCastToMovie;
 
 namespace WebApi.Controllers
 {
@@ -46,10 +47,18 @@ namespace WebApi.Controllers
             return result.Match(onSuccess: Ok);
         }
 
-        [HttpPost("{movieId}/genres/{genreId}")]
+        [HttpPatch("{movieId}/genres/{genreId}")]
         public async Task<IActionResult> AddGenreToMovie([FromRoute] Guid movieId, [FromRoute] Guid genreId)
         {
             var result = await _mediator.Send(new AddGenreToMovieCommand(movieId, genreId));
+            return result.Match(onSuccess: Ok);
+        }
+
+        [HttpPatch("{movieId}/cast/{moviePersonId}")]
+        public async Task<IActionResult> AddCastToMovie([FromRoute] Guid movieId, [FromRoute] Guid moviePersonId, [FromBody] AddCastRequest request)
+        {
+            var result = await _mediator.Send(new AddCastCommand(movieId, moviePersonId, request.MovieRoleId, request.CharacterName));
+
             return result.Match(onSuccess: Ok);
         }
     }

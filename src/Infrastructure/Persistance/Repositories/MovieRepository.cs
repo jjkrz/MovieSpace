@@ -100,5 +100,12 @@ namespace Infrastructure.Persistance.Repositories
                     m.Ratings.Count))
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<Movie?> GetByIdWithCast(Guid Id, CancellationToken cancellationToken)
+        {
+            return await _context.Movies
+                .Include(m => m.MoviePeople)
+                .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
+        }
     }
 }
