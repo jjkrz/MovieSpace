@@ -101,6 +101,9 @@ namespace Domain.Movies
             if ((role.RoleName == "Aktor" || role.RoleName == "Actor") && characterName == null)
                 return Result.Failure(MovieErrors.NullCharacterName);
 
+            if ((role.RoleName != "Aktor" || role.RoleName != "Actor") && characterName != null)
+                characterName = null;
+
             if (_moviePeople.Any(mp => mp.MovieId == Id && mp.MoviePersonId == person.Id && mp.MovieRoleId == role.Id))
             {
                 return Result.Failure(MovieErrors.DuplicateCastMember);
