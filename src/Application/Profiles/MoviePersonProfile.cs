@@ -1,6 +1,8 @@
 using Application.MoviePeople.GetMoviePeople;
+using Application.MovieRoles.GetMovieRoles;
 using AutoMapper;
 using Domain.MoviePeople;
+using Domain.MoviePersonality;
 
 namespace Application.Profiles
 {

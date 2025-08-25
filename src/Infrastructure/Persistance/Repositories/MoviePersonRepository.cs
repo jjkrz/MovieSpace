@@ -48,6 +48,13 @@ namespace Infrastructure.Persistance.Repositories
                 .Take(size)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<ICollection<MoviePerson>> GetByIdsAsync(ICollection<Guid> ids, CancellationToken cancellationToken = default)
+        {
+            var result = await _context.MoviePeople.Where(mp => ids.Contains(mp.Id) ).ToListAsync(cancellationToken);
+
+            return result;
+        }
     }
 }
 

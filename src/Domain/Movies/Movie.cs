@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.MoviePeople;
 using Domain.MoviePersonality;
 using Domain.Movies.Errors;
 
@@ -6,7 +7,19 @@ namespace Domain.Movies
 {
     public sealed class Movie : Entity
     {
-        
+        private Movie()
+        {
+        }
+
+        private Movie(string title, string description, Uri? posterUri, TimeOnly duration, DateTime releaseDate)
+        {
+            Title = title;
+            Description = description;
+            PosterUri = posterUri;
+            Duration = duration;
+            ReleaseDate = releaseDate;
+        }
+
         private readonly List<Genre> _genres = [];
         public IReadOnlyCollection<Genre> Genres => _genres.AsReadOnly();
 
@@ -41,14 +54,7 @@ namespace Domain.Movies
             if (string.IsNullOrWhiteSpace(description))
                 return Result.Failure<Movie>(Error.NullValue);
 
-            var movie = new Movie
-            {
-                Title = title,
-                Description = description,
-                Duration = duration,
-                PosterUri = posterUri,
-                ReleaseDate = releaseDate
-            };
+            var movie = new Movie(title, description, posterUri, duration, releaseDate);
 
             return Result.Success(movie);
         }
@@ -87,6 +93,26 @@ namespace Domain.Movies
             if (_genres.Any(g => g.Id == genre.Id))
                 return Result.Failure(MovieErrors.DuplicateGenre(genre.Name));
             _genres.Add(genre);
+            return Result.Success();
+        }
+
+        public Result AddCastMember(MoviePerson person, MovieRole role, string? characterName)
+        {
+            if ((role.RoleName == "Aktor" || role.RoleName == "Actor") && characterName == null)
+                return Result.Failure(MovieErrors.NullCharacterName);
+
+            if ((role.RoleName != "Aktor" || role.RoleName != "Actor") && characterName != null)
+                characterName = null;
+
+            if (_moviePeople.Any(mp => mp.MovieId == Id && mp.MoviePersonId == person.Id && mp.MovieRoleId == role.Id))
+            {
+                return Result.Failure(MovieErrors.DuplicateCastMember);
+            }
+
+            var moviePersonRole = new MoviePersonRole(this.Id, person.Id, role.Id, characterName);
+
+            _moviePeople.Add(moviePersonRole);
+
             return Result.Success();
         }
     }

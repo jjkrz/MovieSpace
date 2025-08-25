@@ -5,6 +5,19 @@ namespace Domain.MoviePersonality
 {
     public sealed class MoviePersonRole
     {
+        private MoviePersonRole()
+        {
+            
+        }
+
+        public MoviePersonRole(Guid movieId, Guid moviePersonId, Guid movieRoleId, string? characterName)
+        {
+            MovieId = movieId;
+            MoviePersonId = moviePersonId;
+            MovieRoleId = movieRoleId;
+            CharacterName = characterName;
+        }
+
         public Guid MovieId { get; private set; }
         public Movie Movie { get; private set; } = null!;
 
