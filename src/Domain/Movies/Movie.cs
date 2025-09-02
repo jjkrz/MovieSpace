@@ -1,4 +1,5 @@
 ﻿using Domain.Common;
+using Domain.MoviePeople;
 using Domain.MoviePersonality;
 using Domain.Movies.Errors;
 
@@ -21,7 +22,6 @@ namespace Domain.Movies
 
         private readonly List<Review> _reviews = [];
         public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
-
 
         private readonly List<Genre> _genres = [];
         public IReadOnlyCollection<Genre> Genres => _genres.AsReadOnly();
@@ -57,14 +57,7 @@ namespace Domain.Movies
             if (string.IsNullOrWhiteSpace(description))
                 return Result.Failure<Movie>(Error.NullValue);
 
-            var movie = new Movie
-            {
-                Title = title,
-                Description = description,
-                Duration = duration,
-                PosterUri = posterUri,
-                ReleaseDate = releaseDate
-            };
+            var movie = new Movie(title, description, posterUri, duration, releaseDate);
 
             return Result.Success(movie);
         }
