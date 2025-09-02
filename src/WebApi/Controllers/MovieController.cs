@@ -61,5 +61,12 @@ namespace WebApi.Controllers
 
             return result.Match(onSuccess: Ok);
         }
+
+        [HttpPut("{movieId}/reviews")]
+        public async Task<IActionResult> AddReviewToMovie([FromRoute] Guid movieId, [FromBody] AddReviewRequest request)
+        {
+            var result = await _mediator.Send(new Application.Movies.AddReviewToMovie.AddReviewCommand(movieId, request.Content));
+            return result.Match(onSuccess: Ok);
+        }
     }
 }

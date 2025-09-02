@@ -20,6 +20,9 @@ namespace Domain.Movies
             ReleaseDate = releaseDate;
         }
 
+        private readonly List<Review> _reviews = [];
+        public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+
         private readonly List<Genre> _genres = [];
         public IReadOnlyCollection<Genre> Genres => _genres.AsReadOnly();
 
@@ -114,6 +117,51 @@ namespace Domain.Movies
             _moviePeople.Add(moviePersonRole);
 
             return Result.Success();
+        }
+
+        public Result AddReview(string content, Guid userId)
+        {
+            int rating = 0;
+
+            if (UserHasAlreadyRated(userId))
+            {
+                rating = GetUserRating(userId);
+            }
+            else
+            {
+                return Result.Failure(MovieErrors.UserMustRateBeforeReview);
+            }
+
+            if (UserHasAlreadyReviewed(userId))
+            {
+                var existingReview = _reviews.First(r => r.UserId == userId);
+
+                existingReview.UpdateContent(content, rating);
+
+                return Result.Success();
+            }
+
+            var review = new Review(Id, userId, rating, content);
+            
+            _reviews.Add(review);
+
+            return Result.Success();
+        }
+
+        private bool UserHasAlreadyRated(Guid userId)
+        {
+            return _ratings.Any(r => r.UserId == userId);
+        }
+
+        private bool UserHasAlreadyReviewed(Guid userId)
+        {
+            return _reviews.Any(r => r.UserId == userId);
+        }
+
+        private int GetUserRating(Guid userId)
+        {
+            var rating = _ratings.First(r => r.UserId == userId);
+            return rating.Score;
         }
     }
 }

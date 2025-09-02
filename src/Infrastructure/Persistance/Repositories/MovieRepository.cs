@@ -107,5 +107,13 @@ namespace Infrastructure.Persistance.Repositories
                 .Include(m => m.MoviePeople)
                 .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
         }
+
+        public async Task<Movie?> GetByIdWithReviewsAndRatingsByUserId(Guid Id, Guid userId, CancellationToken cancellationToken)
+        {
+            return await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Reviews)
+                .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
+        }
     }
 }
