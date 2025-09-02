@@ -52,5 +52,20 @@ namespace WebApi.Controllers
             var result = await _mediator.Send(new AddGenreToMovieCommand(movieId, genreId));
             return result.Match(onSuccess: Ok);
         }
+
+        [HttpPatch("{movieId}/cast/{moviePersonId}")]
+        public async Task<IActionResult> AddCastToMovie([FromRoute] Guid movieId, [FromRoute] Guid moviePersonId, [FromBody] AddCastRequest request)
+        {
+            var result = await _mediator.Send(new AddCastCommand(movieId, moviePersonId, request.MovieRoleId, request.CharacterName));
+
+            return result.Match(onSuccess: Ok);
+        }
+
+        [HttpPut("{movieId}/reviews")]
+        public async Task<IActionResult> AddReviewToMovie([FromRoute] Guid movieId, [FromBody] AddReviewRequest request)
+        {
+            var result = await _mediator.Send(new Application.Movies.AddReviewToMovie.AddReviewCommand(movieId, request.Content));
+            return result.Match(onSuccess: Ok);
+        }
     }
 }

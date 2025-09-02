@@ -5,6 +5,10 @@ namespace Application.Abstractions
 {
     public interface IMovieRepository
     {
+        Task<Movie?> GetByIdWithReviewsAndRatingsByUserId(
+                Guid Id,
+                Guid userId,
+                CancellationToken cancellationToken);
         Task<long> GetMoviesCountAsync(
                 string? search = null,
                 CancellationToken cancellationToken = default);

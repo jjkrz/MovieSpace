@@ -6,7 +6,23 @@ namespace Domain.Movies
 {
     public sealed class Movie : Entity
     {
-        
+        private Movie()
+        {
+        }
+
+        private Movie(string title, string description, Uri? posterUri, TimeOnly duration, DateTime releaseDate)
+        {
+            Title = title;
+            Description = description;
+            PosterUri = posterUri;
+            Duration = duration;
+            ReleaseDate = releaseDate;
+        }
+
+        private readonly List<Review> _reviews = [];
+        public IReadOnlyCollection<Review> Reviews => _reviews.AsReadOnly();
+
+
         private readonly List<Genre> _genres = [];
         public IReadOnlyCollection<Genre> Genres => _genres.AsReadOnly();
 
@@ -88,6 +104,71 @@ namespace Domain.Movies
                 return Result.Failure(MovieErrors.DuplicateGenre(genre.Name));
             _genres.Add(genre);
             return Result.Success();
+        }
+
+        public Result AddCastMember(MoviePerson person, MovieRole role, string? characterName)
+        {
+            if ((role.RoleName == "Aktor" || role.RoleName == "Actor") && characterName == null)
+                return Result.Failure(MovieErrors.NullCharacterName);
+
+            if ((role.RoleName != "Aktor" || role.RoleName != "Actor") && characterName != null)
+                characterName = null;
+
+            if (_moviePeople.Any(mp => mp.MovieId == Id && mp.MoviePersonId == person.Id && mp.MovieRoleId == role.Id))
+            {
+                return Result.Failure(MovieErrors.DuplicateCastMember);
+            }
+
+            var moviePersonRole = new MoviePersonRole(this.Id, person.Id, role.Id, characterName);
+
+            _moviePeople.Add(moviePersonRole);
+
+            return Result.Success();
+        }
+
+        public Result AddReview(string content, Guid userId)
+        {
+            int rating = 0;
+
+            if (UserHasAlreadyRated(userId))
+            {
+                rating = GetUserRating(userId);
+            }
+            else
+            {
+                return Result.Failure(MovieErrors.UserMustRateBeforeReview);
+            }
+
+            if (UserHasAlreadyReviewed(userId))
+            {
+                var existingReview = _reviews.First(r => r.UserId == userId);
+
+                existingReview.UpdateContent(content, rating);
+
+                return Result.Success();
+            }
+
+            var review = new Review(Id, userId, rating, content);
+            
+            _reviews.Add(review);
+
+            return Result.Success();
+        }
+
+        private bool UserHasAlreadyRated(Guid userId)
+        {
+            return _ratings.Any(r => r.UserId == userId);
+        }
+
+        private bool UserHasAlreadyReviewed(Guid userId)
+        {
+            return _reviews.Any(r => r.UserId == userId);
+        }
+
+        private int GetUserRating(Guid userId)
+        {
+            var rating = _ratings.First(r => r.UserId == userId);
+            return rating.Score;
         }
     }
 }
