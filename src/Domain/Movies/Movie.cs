@@ -163,5 +163,18 @@ namespace Domain.Movies
             var rating = _ratings.First(r => r.UserId == userId);
             return rating.Score;
         }
+
+        public Result AddProductionCountry(ProductionCountry country)
+        {
+            if (country == null)
+                return Result.Failure<Guid>(Error.NullValue);
+
+            if (_productionCountries.Any(c => c.Id == country.Id))
+                return Result.Failure<Guid>(MovieErrors.DuplicateProductionCountry(country.Name));
+            
+            _productionCountries.Add(country);
+            
+            return Result.Success();
+        }
     }
 }

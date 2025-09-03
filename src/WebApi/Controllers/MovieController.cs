@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Application.Movies.GetMovies;
 using Application.Movies.AddGenreToMovie;
 using Application.Movies.AddCastToMovie;
+using Application.Movies.AddProductionCountryToMovie;
 
 namespace WebApi.Controllers
 {
@@ -62,11 +63,19 @@ namespace WebApi.Controllers
             return result.Match(onSuccess: Ok);
         }
 
-        [HttpPut("{movieId}/reviews")]
+        [HttpPatch("{movieId}/reviews")]
         public async Task<IActionResult> AddReviewToMovie([FromRoute] Guid movieId, [FromBody] AddReviewRequest request)
         {
             var result = await _mediator.Send(new Application.Movies.AddReviewToMovie.AddReviewCommand(movieId, request.Content));
             return result.Match(onSuccess: Ok);
         }
+
+        [HttpPatch("{movieId}/add-production-country/{productionCountryId}")]
+        public async Task<IActionResult> AddProductionCountryToMovie([FromRoute] Guid movieId, [FromRoute] Guid productionCountryId)
+        {
+            var result = await _mediator.Send(new AddProductionCountryToMovieCommand(movieId, productionCountryId));
+            return result.Match(onSuccess: Ok);
+        }
+
     }
 }
