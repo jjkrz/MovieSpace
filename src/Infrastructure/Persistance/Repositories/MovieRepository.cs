@@ -115,5 +115,12 @@ namespace Infrastructure.Persistance.Repositories
                 .Include(m => m.Reviews)
                 .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
         }
+
+        public async Task<Movie?> GetByIdWithProductionCountriesAsync(Guid Id, CancellationToken cancellationToken)
+        {
+            return await _context.Movies
+                .Include(m => m.ProductionCountries)
+                .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
+        }
     }
 }

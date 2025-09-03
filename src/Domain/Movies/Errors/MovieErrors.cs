@@ -11,6 +11,7 @@ namespace Domain.Movies.Errors
         public static Error NullCharacterName => new Error(ErrorType.Validation, "Character name cannot be null for roles that require it (e.g., Actor).");
         public static Error DuplicateCastMember => new Error(ErrorType.Conflict, "Cast member already exists in this movie");
         public static Error UserMustRateBeforeReview => new Error(ErrorType.Conflict, "User must rate the movie before adding a review.");
+        public static Error DuplicateProductionCountry(string countryName) => new Error(ErrorType.Conflict, $"Production country: {countryName} already exists in this movie's production country list");
 
     }
 }
