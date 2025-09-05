@@ -1,3 +1,4 @@
+using Application.Common.Dto;
 using Application.MoviePeople.GetMoviePeople;
 using Application.MovieRoles.GetMovieRoles;
 using AutoMapper;
@@ -18,6 +19,18 @@ namespace Application.Profiles
             CreateMap<MovieRole, RoleDto>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.RoleName, opt => opt.MapFrom(src => src.RoleName));
+
+            CreateMap<MoviePerson, DirectorDto>()
+            .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+            .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.GetFullName()));
+
+            CreateMap<MoviePerson, ActorDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.GetFullName()));
+
+            CreateMap<MoviePerson, ScriptWriterDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.FullName, opt => opt.MapFrom(src => src.GetFullName()));
         }
     }
 }
