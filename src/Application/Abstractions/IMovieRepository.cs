@@ -5,6 +5,8 @@ namespace Application.Abstractions
 {
     public interface IMovieRepository
     {
+        Task<Movie?> GetByIdAsync(Guid Id, CancellationToken cancellationToken);
+
         Task<Movie?> GetByIdWithProductionCountriesAsync(Guid Id, CancellationToken cancellationToken);
         Task<Movie?> GetByIdWithReviewsAndRatingsByUserId(
                 Guid Id,

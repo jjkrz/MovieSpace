@@ -3,6 +3,7 @@ using Application.Abstractions;
 using Infrastructure.Database;
 using Infrastructure.Persistance;
 using Infrastructure.Persistance.Identity;
+using Infrastructure.Persistance.ReadOnlyRepositories;
 using Infrastructure.Persistance.Repositories;
 using Infrastructure.Persistance.Services.AuthService;
 using Infrastructure.Persistance.Services.Jwt;
@@ -65,6 +66,7 @@ namespace Infrastructure
             services.AddScoped<IProductionCountryRepository, ProductionCountryRepository>();
             services.AddScoped<IMoviePersonRepository, MoviePersonRepository>();
             services.AddScoped<IMovieRoleRepository, MovieRoleRepository>();
+            services.AddScoped<IReviewReadRepository, ReviewReadRepository>();
 
             return services;
         }
