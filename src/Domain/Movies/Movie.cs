@@ -176,5 +176,37 @@ namespace Domain.Movies
             
             return Result.Success();
         }
+
+        public IReadOnlyCollection<MoviePerson> GetDirectors()
+        {
+            return _moviePeople
+                .Where(mp => mp.MovieRole.RoleName == "Director")
+                .Select(mp => mp.MoviePerson)
+                .ToList();
+        }
+
+        public IReadOnlyCollection<MoviePerson> GetActors()
+        {
+            return _moviePeople
+                .Where(mp => mp.MovieRole.RoleName == "Actor")
+                .Select(mp => mp.MoviePerson)
+                .ToList();
+        }
+
+        public IReadOnlyCollection<MoviePerson> GetWriters()
+        {
+            return _moviePeople
+                .Where(mp => mp.MovieRole.RoleName == "Writer")
+                .Select(mp => mp.MoviePerson)
+                .ToList();
+        }
+
+        public IReadOnlyCollection<Review> GetLatestReviews()
+        {
+            return _reviews
+                .OrderByDescending(r => r.CreatedAt)
+                .Take(5)
+                .ToList();                        
+        }
     }
 }

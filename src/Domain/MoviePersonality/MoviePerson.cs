@@ -37,5 +37,7 @@ namespace Domain.MoviePeople
                 LastName = lastName;
             return Result.Success();
         }
+
+        public string GetFullName() => $"{FirstName} {LastName}";
     }
 }
