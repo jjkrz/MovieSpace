@@ -122,5 +122,18 @@ namespace Infrastructure.Persistance.Repositories
                 .Include(m => m.ProductionCountries)
                 .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
         }
+
+        public async Task<Movie?> GetByIdAsync(Guid Id, CancellationToken cancellationToken)
+        {
+            return await _context.Movies
+                .Include(m => m.MoviePeople)
+                    .ThenInclude(mp => mp.MovieRole)
+                .Include(m => m.MoviePeople)
+                    .ThenInclude(mp => mp.MoviePerson)
+                .Include(m => m.Genres)
+                .Include(m => m.ProductionCountries)
+                .Include(m => m.Reviews)
+                .FirstOrDefaultAsync(m => m.Id == Id, cancellationToken);
+        }
     }
 }

@@ -9,6 +9,7 @@ using Application.Movies.GetMovies;
 using Application.Movies.AddGenreToMovie;
 using Application.Movies.AddCastToMovie;
 using Application.Movies.AddProductionCountryToMovie;
+using Application.Movies.GetMovieDetails;
 
 namespace WebApi.Controllers
 {
@@ -77,5 +78,11 @@ namespace WebApi.Controllers
             return result.Match(onSuccess: Ok);
         }
 
+        [HttpGet("{movieId}")]
+        public async Task<IActionResult> GetMovieDetails([FromRoute] Guid movieId)
+        {
+            var result = await _mediator.Send(new GetMovieDetailsQuery(movieId));
+            return result.Match(onSuccess: Ok);
+        }
     }
 }

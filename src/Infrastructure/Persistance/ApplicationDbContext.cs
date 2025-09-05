@@ -18,6 +18,7 @@ namespace Infrastructure.Database
         public DbSet<MoviePerson> MoviePeople { get; private set; }
         public DbSet<MovieRole> MovieRoles { get; private set; }
         public DbSet<MoviePersonRole> MoviePersonRoles { get; private set; }
+        public DbSet<Review> Reviews { get; private set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

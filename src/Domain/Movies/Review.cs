@@ -1,6 +1,4 @@
-﻿using Domain.Common;
-
-namespace Domain.Movies
+﻿namespace Domain.Movies
 {
     public sealed class Review
     {

@@ -1,4 +1,5 @@
-﻿using Domain.MoviePeople;
+﻿
+using Domain.MoviePeople;
 using Domain.Movies;
 
 namespace Domain.MoviePersonality
