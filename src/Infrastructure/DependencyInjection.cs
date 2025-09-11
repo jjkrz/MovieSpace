@@ -1,6 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Text;
 using Application.Abstractions;
 using Infrastructure.Database;
+using Infrastructure.Http_Clients;
 using Infrastructure.Persistance;
 using Infrastructure.Persistance.Identity;
 using Infrastructure.Persistance.ReadOnlyRepositories;
@@ -67,6 +69,8 @@ namespace Infrastructure
             services.AddScoped<IMoviePersonRepository, MoviePersonRepository>();
             services.AddScoped<IMovieRoleRepository, MovieRoleRepository>();
             services.AddScoped<IReviewReadRepository, ReviewReadRepository>();
+
+            services.AddHttpClient<IMovieRatingService, OmdbClient>();
 
             return services;
         }
