@@ -11,6 +11,7 @@ namespace Application.Common.Dto
         public string Description { get; set; } = null!;
         public double AverageRating { get; set; }
         public int RatingCount { get; set; }
+        public float ImdbRating { get; set; }
         public DateOnly ReleaseDate { get; set; }
         public List<DirectorDto> Directors { get; set; } = null!;
         public List<ScriptWriterDto> ScriptWriters { get; set; } = null!;

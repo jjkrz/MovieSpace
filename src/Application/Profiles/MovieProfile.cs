@@ -1,12 +1,7 @@
 ﻿using Application.Movies.GetMovies;
 using AutoMapper;
 using Domain.Movies;
-using Application.MovieRoles.GetMovieRoles;
-using Domain.MoviePersonality;
 using Application.Common.Dto;
-using Application.Genres.GetGenres;
-using Application.ProductionCountries.GetProductionCountries;
-using System.Xml.Serialization;
 
 namespace Application.Profiles
 {
@@ -26,6 +21,7 @@ namespace Application.Profiles
                 .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
                 .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
                 .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.AverageRating ?? 0))
+                .ForMember(dest => dest.ImdbRating, opt => opt.Ignore())
                 .ForMember(dest => dest.RatingCount, opt => opt.MapFrom(src => src.RatingCount))
                 .ForMember(dest => dest.ReleaseDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.ReleaseDate)))
                 .ForMember(dest => dest.Directors, opt => opt.MapFrom(src => src.GetDirectors()))

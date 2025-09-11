@@ -46,6 +46,7 @@ namespace Domain.Movies
         }
         public TimeOnly Duration { get; private set; }
         public DateTime ReleaseDate { get; private set; }
+        public int ReleaseDateYear => ReleaseDate.Year;
         public double? AverageRating { get; private set; }
         public int RatingCount { get; private set; }
 
@@ -206,7 +207,7 @@ namespace Domain.Movies
             return _reviews
                 .OrderByDescending(r => r.CreatedAt)
                 .Take(5)
-                .ToList();                        
+                .ToList();
         }
     }
 }
