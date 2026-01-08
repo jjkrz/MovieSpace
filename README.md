@@ -118,6 +118,4 @@ docker-compose.pgadmin.yml
 ## Jakość i logowanie
 - Serilog loguje do konsoli. Poziomy i sinki w `appsettings.json`.
 
-## Licencja
-Projekt edukacyjno-rekrutacyjny. Wykorzystuj dowolnie w celach demonstracyjnych.
 
