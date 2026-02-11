@@ -71,7 +71,7 @@ namespace WebApi.Controllers
             return result.Match(onSuccess: Ok);
         }
 
-        [HttpPatch("{movieId}/add-production-country/{productionCountryId}")]
+        [HttpPatch("{movieId}/production-country/{productionCountryId}")]
         public async Task<IActionResult> AddProductionCountryToMovie([FromRoute] Guid movieId, [FromRoute] Guid productionCountryId)
         {
             var result = await _mediator.Send(new AddProductionCountryToMovieCommand(movieId, productionCountryId));
@@ -84,5 +84,6 @@ namespace WebApi.Controllers
             var result = await _mediator.Send(new GetMovieDetailsQuery(movieId));
             return result.Match(onSuccess: Ok);
         }
+
     }
 }

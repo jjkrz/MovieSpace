@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Domain.Sessions;
 
 namespace Infrastructure.Database
 {
@@ -19,6 +20,7 @@ namespace Infrastructure.Database
         public DbSet<MovieRole> MovieRoles { get; private set; }
         public DbSet<MoviePersonRole> MoviePersonRoles { get; private set; }
         public DbSet<Review> Reviews { get; private set; }
+        public DbSet<Session> Sessions  { get; private set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
