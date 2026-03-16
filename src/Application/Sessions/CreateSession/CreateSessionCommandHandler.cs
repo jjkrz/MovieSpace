@@ -1,4 +1,5 @@
 ﻿using Application.Abstractions;
+using Application.Services;
 using Domain.Common;
 using Domain.Sessions;
 using MediatR;
@@ -18,31 +19,29 @@ namespace Application.Sessions.CreateSession
 
         async Task<Result<CreateSessionResponse>> IRequestHandler<CreateSessionCommand, Result<CreateSessionResponse>>.Handle(CreateSessionCommand request, CancellationToken cancellationToken)
         {
-            for (int i = 0; i < 3; i++) // three chances to avoid duplicate session key to avoid collision
+            for (int i = 0; i < 3; i++)
             {
-                var session = Session.CreateSession(request.DisplayName);
+                var sessionResult = Session.CreateSession(request.DisplayName, AccessCodeGenerator.GenerateUniqueAccessCode());
 
-                if (session.IsFailure)
+                if (sessionResult.IsFailure)
+                    return Result.Failure<CreateSessionResponse>(sessionResult.Error);
+
+                await _sessionRepo.CreateAsync(sessionResult.Value, cancellationToken);
+
+                try
                 {
-                    return Result.Failure<CreateSessionResponse>(session.Error);
-                }
-
-                await _sessionRepo.CreateAsync(session.Value, cancellationToken);
-                
-                try {
                     await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                    return Result.Success(
+                        new CreateSessionResponse(sessionResult.Value.Id, sessionResult.Value.AccessCode));
                 }
-                catch (Exception ex)
+                catch (DuplicateAccessCodeException ex)
                 {
-                    if (ex.Message.Contains("duplicate key value violates unique constraint"))
-                    {
-                        continue; // try again with a new session key
-                    }
-                    return Result.Failure<CreateSessionResponse>(new Error("An error occurred while creating the session."));
+                    continue;
                 }
             }
-            
-            return Result.Success(new CreateSessionResponse());
+
+            return Result.Failure<CreateSessionResponse>(Error.Conflict);
         }
     }
 }

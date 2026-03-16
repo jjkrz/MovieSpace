@@ -5,37 +5,40 @@ namespace Domain.Sessions
 {
     public class Session : Entity
     {
-        private string AccessCode = null!;
-        private ICollection<Participant> Participants = [];
+        private readonly List<Participant> _participants = [];
+        public IReadOnlyCollection<Participant> Participants => _participants.AsReadOnly();
+
+        public string AccessCode = null!;
+
         private Session() { }
-        private Session(string displayName)
+        private Session(string displayName, string accessCode)
         {
-            var participant = new Participant(displayName);
             this.AddToSession(displayName);
+            AccessCode = accessCode;
         }
 
         public void AddToSession(string displayName)
         {
-            Participants.Add(new Participant(displayName));
+            _participants.Add(new Participant(displayName));
         }
 
-        public static Result<Session> CreateSession(string displayName)
+        public static Result<Session> CreateSession(string displayName, string accessCode)
         {
             if (displayName.Length > 30)
                 return Result.Failure<Session>(SessionErrors.SessionDisplayNameLength);
 
-            var session = new Session(displayName);
+            var session = new Session(displayName, accessCode);
 
             return session;
         }
     }
 
-    public class Participant
+    public class Participant : Entity
     {
         public string DisplayName { get; private set; }
 
         public Participant() { }
-        public Participant(string displayName)  
+        public Participant(string displayName)
         {
             DisplayName = displayName;
         }

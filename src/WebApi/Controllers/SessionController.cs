@@ -1,7 +1,5 @@
 ﻿using Application.Sessions.CreateSession;
-using Application.Users.Login;
 using MediatR;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Extensions;
 
@@ -16,7 +14,6 @@ namespace WebApi.Controllers
             _mediator = mediator;
         }
 
-        
         [HttpPost]
         public async Task<IActionResult> CreateSession([FromBody] CreateSessionCommand command)
         {
@@ -24,7 +21,5 @@ namespace WebApi.Controllers
 
             return result.Match(onSuccess: Ok);
         }
-    }
-        
     }
 }

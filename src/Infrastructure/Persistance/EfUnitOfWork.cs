@@ -1,7 +1,9 @@
 ﻿using Application.Abstractions;
+using Application.Sessions.CreateSession;
 using Domain.Common;
 using Infrastructure.Database;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistance
 {
@@ -18,11 +20,18 @@ namespace Infrastructure.Persistance
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var result = await _ct.SaveChangesAsync(cancellationToken);
+            try
+            {
+                var result = await _ct.SaveChangesAsync(cancellationToken);
 
-            await PublishDomainEvents();
+                await PublishDomainEvents();
 
-            return result;
+                return result;
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new DuplicateAccessCodeException();
+            }
         }
 
         private async Task PublishDomainEvents()
