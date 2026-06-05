@@ -13,7 +13,6 @@ namespace Infrastructure.Http_Clients
         private readonly string? _apiKey;
         private readonly ILogger<OmdbClient> _logger;
 
-
         public OmdbClient(HttpClient httpClient, IConfiguration configuration, ILogger<OmdbClient> logger)
         {
             _httpClient = httpClient;

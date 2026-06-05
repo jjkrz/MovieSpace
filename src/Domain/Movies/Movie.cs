@@ -14,7 +14,7 @@ namespace Domain.Movies
         private Movie(string title, string description, Uri? posterUri, TimeOnly duration, DateTime releaseDate)
         {
             Title = title;
-            Description = description;
+            Description = description;  
             PosterUri = posterUri;
             Duration = duration;
             ReleaseDate = releaseDate;

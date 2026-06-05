@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Text;
 using Domain.Common;
 using Infrastructure.Persistance.Identity;
-using Infrastructure.Persistance.Services.AuthService;
 using Infrastructure.Persistance.Services.Jwt.Errors;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;

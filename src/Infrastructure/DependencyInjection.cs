@@ -43,7 +43,7 @@ namespace Infrastructure
             })
             .AddJwtBearer(options =>
             {
-                options.TokenValidationParameters = new TokenValidationParameters
+                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:Key"]!)),
@@ -69,6 +69,7 @@ namespace Infrastructure
             services.AddScoped<IMoviePersonRepository, MoviePersonRepository>();
             services.AddScoped<IMovieRoleRepository, MovieRoleRepository>();
             services.AddScoped<IReviewReadRepository, ReviewReadRepository>();
+            services.AddScoped<ISessionRepository, SessionRepository>();
 
             services.AddHttpClient<IMovieRatingService, OmdbClient>();
 

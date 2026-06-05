@@ -1,11 +1,14 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Sockets;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;
+
+Console.WriteLine(builder.Environment.EnvironmentName);
 
 builder.Services
     .AddApplication()
@@ -15,6 +18,7 @@ builder.Host.UseSerilog((context, configuration) =>
     configuration.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
+builder.Services.AddSignalR();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -66,5 +70,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<SessionHub>("/hubs/session");
 
 app.Run();
