@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure;
+using Infrastructure.Sockets;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
