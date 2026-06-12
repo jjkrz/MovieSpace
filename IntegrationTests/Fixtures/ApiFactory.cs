@@ -19,10 +19,15 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         builder.UseEnvironment("Testing");
 
+        // Override ALL external dependencies so the app never touches the dev/prod database.
+        // AddInMemoryCollection appended last wins — highest priority in the config chain.
         builder.ConfigureAppConfiguration((_, config) =>
         {
             config.AddInMemoryCollection(new Dictionary<string, string?>
             {
+                // Belt-and-suspenders: even if the DbContext replacement below is bypassed,
+                // this ensures AddInfrastructure reads the test container's connection string.
+                ["ConnectionStrings:DefaultConnection"] = _dbContainer.GetConnectionString(),
                 ["Jwt:Key"] = "integration-test-secret-key-must-be-at-least-256bits!!",
                 ["Jwt:Issuer"] = "MovieSpace.Tests",
                 ["Jwt:Audience"] = "MovieSpace.Tests",
@@ -32,14 +37,21 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         builder.ConfigureServices(services =>
         {
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
-            if (descriptor is not null)
-                services.Remove(descriptor);
+            // Remove every descriptor that could keep the production connection string alive.
+            // Using Where (not SingleOrDefault) because AddDbContext may register more than one
+            // DbContextOptions descriptor (e.g. generic + non-generic overloads).
+            var dbDescriptors = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
+                         || d.ServiceType == typeof(DbContextOptions))
+                .ToList();
+
+            foreach (var d in dbDescriptors)
+                services.Remove(d);
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseNpgsql(_dbContainer.GetConnectionString()));
 
+            // Remove background services (e.g. rating calculator) to keep tests fast and isolated
             var hostedServices = services
                 .Where(d => d.ServiceType == typeof(IHostedService))
                 .ToList();

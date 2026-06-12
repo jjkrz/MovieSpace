@@ -7,7 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-and-test:
+  unit-tests:
+    name: Unit Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -22,8 +23,34 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
-    - name: Build project
+    - name: Build
       run: dotnet build --no-restore --configuration Release
 
-    - name: Run xUnit Tests
-      run: dotnet test --no-build --configuration Release --verbosity normal
+    - name: Run unit tests
+      run: dotnet test UnitTests/MovieSpace.UnitTests.csproj --no-build --configuration Release --verbosity normal
+
+  integration-tests:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run integration tests
+      run: dotnet test IntegrationTests/MovieSpace.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
+      env:
+        # Testcontainers on GitHub Actions connects to the Docker daemon via this socket.
+        # ubuntu-latest runners have Docker pre-installed and this path is standard.
+        DOCKER_HOST: unix:///var/run/docker.sock
