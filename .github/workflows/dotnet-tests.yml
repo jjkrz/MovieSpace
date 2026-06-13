@@ -51,6 +51,6 @@ jobs:
     - name: Run integration tests
       run: dotnet test IntegrationTests/MovieSpace.IntegrationTests.csproj --no-build --configuration Release --verbosity normal
       env:
-        # Testcontainers on GitHub Actions connects to the Docker daemon via this socket.
-        # ubuntu-latest runners have Docker pre-installed and this path is standard.
         DOCKER_HOST: unix:///var/run/docker.sock
+        TESTCONTAINERS_RYUK_DISABLED: "true"
+        TESTCONTAINERS_HOST_OVERRIDE: "localhost"

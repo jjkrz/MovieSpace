@@ -66,7 +66,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
         using var scope = Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await db.Database.MigrateAsync();
+        await db.Database.EnsureCreatedAsync();
     }
 
     public async Task ResetDatabaseAsync()
