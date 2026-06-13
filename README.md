@@ -1,121 +1,100 @@
 # MovieSpace
 
-Nowoczesne API do zarządzania filmami i osobami z branży filmowej, zbudowane w oparciu o .NET 8, Clean Architecture oraz PostgreSQL. Projekt przygotowany pod rekrutację – szybki start, klarowna architektura, gotowe środowisko Docker.
+REST API for managing movies, cast, reviews, ratings, and collaborative group movie-picking sessions.
 
-## Najważniejsze funkcje
-- **Filmy**: CRUD, szczegóły, paginacja, średnia ocena, recenzje
-- **Gatunki / Kraje produkcji**: dodawanie, przypinanie do filmów
-- **Obsada**: osoby, role, przypinanie ról do filmów
-- **Użytkownicy**: rejestracja i logowanie (JWT)
-- **Swagger**: interaktywna dokumentacja
+## Tech Stack
 
-## Stos technologiczny
-- **Platforma**: .NET 8, ASP.NET Core Web API
-- **Architektura**: Clean Architecture (Domain, Application, Infrastructure, WebApi)
-- **CQRS**: MediatR
-- **ORM**: Entity Framework Core + PostgreSQL
-- **Mapowanie**: AutoMapper (profile w warstwie Application)
-- **Logowanie**: Serilog (konsola)
-- **Kontenery**: Docker + docker-compose
+| Category | Technology |
+|---|---|
+| Platform | .NET 8, ASP.NET Core Web API |
+| Architecture | Clean Architecture (4-layer) |
+| CQRS | MediatR |
+| ORM | Entity Framework Core 8 + Npgsql |
+| Auth | ASP.NET Core Identity + JWT Bearer |
+| Validation | FluentValidation (MediatR pipeline behavior) |
+| Real-time | SignalR (WebSockets) |
+| External API | OMDB HTTP client |
+| Logging | Serilog |
+| Containers | Docker + docker-compose |
+| Unit Tests | xUnit, FluentAssertions |
+| Integration Tests | xUnit, Testcontainers (PostgreSQL), WebApplicationFactory |
+| CI/CD | GitHub Actions |
 
-## Architektura (warstwy)
-- `src/Domain` – model domenowy, zdarzenia, `Result`, błędy
-- `src/Application` – przypadki użycia (komendy/zapytania, walidacje, profile AutoMapper)
-- `src/Infrastructure` – EF Core, `ApplicationDbContext`, repozytoria, migracje, usługi
-- `src/WebApi` – konfiguracja hosta, kontrolery, Swagger, JWT
-
-## Szybki start (Docker)
-1) Utwórz plik `.env` w katalogu głównym repozytorium:
+## Architecture
 
 ```
+src/
+├── Domain/          # Entities, Result<T> pattern, domain errors
+├── Application/     # Commands, Queries, validators, abstractions
+├── Infrastructure/  # EF Core, repositories, Identity, JWT, SignalR, OMDB client
+└── WebApi/          # Controllers, Swagger, host configuration
+```
+
+## Features
+
+- **Movies** — CRUD, pagination, average rating
+- **Genres & Production Countries** — add, delete, assign to movies
+- **Cast** — people, roles, many-to-many assignments
+- **Reviews & Ratings** — add reviews, score movies (JWT protected)
+- **Auth** — register, login, JWT token
+- **Group Sessions** — real-time collaborative movie-picking via SignalR; match detected when all participants swipe Accept on the same movie
+
+## Tests
+
+**Unit tests** — domain logic for `Movie`, `Genre`, `ProductionCountry`, `Rating`, `Review`, `Session`:
+```bash
+dotnet test UnitTests/MovieSpace.UnitTests.csproj
+```
+
+**Integration tests** — 12 auth flow scenarios against a real PostgreSQL container (Testcontainers), full ASP.NET Core pipeline via WebApplicationFactory:
+```bash
+dotnet test IntegrationTests/MovieSpace.IntegrationTests.csproj
+```
+
+Both suites run automatically on every push/PR to `main` via **GitHub Actions**.
+
+## Quick Start (Docker)
+
+1. Create `.env` in the repo root:
+
+```env
 ASPNETCORE_ENVIRONMENT=Development
-# Baza danych
 POSTGRES_DB=MovieSpaceDB
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=admin
-# Connection string dla API (musi wskazywać na serwis bazy z compose)
 ConnectionStrings__Default=Host=moviespace.database;Port=5432;Database=MovieSpaceDB;Username=postgres;Password=admin
-# JWT
 JWT_ISSUER=moviespace
 JWT_AUDIENCE=moviespace.api
 JWT_KEY=super_secret_dev_key_change_me
 ```
 
-2) Uruchom kontenery:
-
+2. Start:
 ```bash
 docker compose up -d --build
 ```
 
-3) API będzie dostępne pod `http://localhost:5000`. Swagger: `http://localhost:5000/swagger`.
+API: `http://localhost:5000` | Swagger: `http://localhost:5000/swagger`
 
-Opcjonalnie: PgAdmin
+## Quick Start (Local)
 
-```bash
-# W drugim terminalu, jeśli chcesz GUI do bazy
-docker compose -f docker-compose.pgadmin.yml up -d
-# PgAdmin: http://localhost:8082 (admin@admin.com / admin)
-```
-
-Uwagi
-- Migrations: obrazy nie uruchamiają automatycznej migracji – jeśli to potrzebne, uruchom EF lokalnie (sekcja niżej) albo dodaj krok migracji na starcie.
-
-## Uruchomienie lokalne (bez Docker)
-Wymagania: .NET 8 SDK, PostgreSQL 14+.
-
-1) Skonfiguruj connection string w `src/WebApi/appsettings.json` lub przez zmienną środowiskową `ConnectionStrings__DefaultConnection`.
-
-2) Zastosuj migracje EF (jednorazowo):
+Requirements: .NET 8 SDK, PostgreSQL 14+
 
 ```bash
-# Z katalogu głównego repo
-dotnet tool update --global dotnet-ef
-# Aktualizacja bazy (migracje znajdują się w projekcie Infrastructure)
 dotnet ef database update -p src/Infrastructure -s src/WebApi -c ApplicationDbContext
-```
-
-3) Uruchom API:
-
-```bash
 dotnet run --project src/WebApi
 ```
 
-- API: `https://localhost:8080` (domyślny port aplikacji) lub wg `launchSettings.json`
-- Swagger: `/swagger`
-
-## Migracje EF – skróty
-- Dodanie migracji:
+## EF Core Migrations
 
 ```bash
-dotnet ef migrations add <NazwaMigracji> -p src/Infrastructure -s src/WebApi -c ApplicationDbContext
-```
-
-- Zastosowanie migracji:
-
-```bash
+# Add
+dotnet ef migrations add <Name> -p src/Infrastructure -s src/WebApi -c ApplicationDbContext
+# Apply
 dotnet ef database update -p src/Infrastructure -s src/WebApi -c ApplicationDbContext
 ```
 
-## Struktura repozytorium
-```
-MovieSpace.sln
-src/
-  Domain/
-  Application/
-  Infrastructure/
-  WebApi/
-containers/
-  db-data/        # wolumen Postgresa
-Dockerfile        # (w WebApi)
-docker-compose.yml
-docker-compose.pgadmin.yml
-```
+## Auth (Swagger)
 
-## Autoryzacja i testowanie w Swaggerze
-- Po rejestracji/zalogowaniu otrzymujesz JWT.
-- Kliknij "Authorize" w Swaggerze i wprowadź: `Bearer <token>`.
-
-## Jakość i logowanie
-- Serilog loguje do konsoli. Poziomy i sinki w `appsettings.json`.
-
-
+1. `POST /api/auth/register`
+2. `POST /api/auth/login` — returns JWT
+3. Click **Authorize** → `Bearer <token>`
